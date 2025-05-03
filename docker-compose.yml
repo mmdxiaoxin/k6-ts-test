@@ -7,9 +7,11 @@ services:
       - "8086:8086"
       - "8083:8083"
     environment:
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin
       - INFLUXDB_DB=k6
-      - INFLUXDB_USER=k6
-      - INFLUXDB_USER_PASSWORD=k6password
+      - INFLUXDB_BUCKET=k6_bucket
+      - INFLUXDB_ORG=nwafu
     volumes:
       - influxdb_data:/var/lib/influxdb
 
