@@ -78,10 +78,11 @@ for test_file in "${TEST_FILES[@]}"; do
     -v "$(pwd):/src" \
     -v "$(pwd)/${OUTPUT_DIR}:/output" \
     --user "$(id -u):$(id -g)" \
+    --add-host=host.docker.internal:host-gateway \
     grafana/k6 run \
     --summary-export="/output/${test_name}-summary.json" \
     --out json="/output/${test_name}.json" \
-    --out influxdb="/output/${test_name}-influx.json" \
+    --out influxdb="http://host.docker.internal:8086/k6" \
     --out csv="/output/${test_name}.csv" \
     "/src/${test_file}"
 
