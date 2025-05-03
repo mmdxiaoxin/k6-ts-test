@@ -1,0 +1,22 @@
+# Node.js dependencies
+node_modules/
+
+# TypeScript cache and outputs
+*.tsbuildinfo
+dist/
+build/
+
+# Logs
+logs/
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.sw?
+
+# Optional: environment or se
