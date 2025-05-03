@@ -6,9 +6,9 @@ import http from 'k6/http';
 export const options = {
   // 定义测试阶段
   stages: [
-    { duration: '30s', target: 1000 }, // 30秒内逐渐增加到10个并发用户
-    { duration: '1m', target: 100 }, // 保持10个并发用户1分钟
-    { duration: '30s', target: 0 }, // 30秒内逐渐减少到0个并发用户
+    { duration: '10s', target: 1000 }, // 30秒内逐渐增加到10个并发用户
+    { duration: '20s', target: 100 }, // 保持10个并发用户1分钟
+    { duration: '10s', target: 0 }, // 30秒内逐渐减少到0个并发用户
   ],
   // 定义性能指标阈值
   thresholds: {
@@ -63,8 +63,12 @@ export default function () {
     状态码是200: (r) => r.status === 200,
     响应时间小于500ms: (r) => r.timings.duration < 500,
     响应包含token: (r) => {
-      const body = JSON.parse(r.body as string);
-      return body.data && body.data.access_token;
+      try {
+        const body = JSON.parse(r.body as string);
+        return body.data && body.data.access_token;
+      } catch (e) {
+        return false;
+      }
     },
   });
 
