@@ -69,6 +69,7 @@ for test_file in "${TEST_FILES[@]}"; do
   result_file="${OUTPUT_DIR}/${test_name}.json"
   summary_file="${OUTPUT_DIR}/${test_name}-summary.json"
   influx_file="${OUTPUT_DIR}/${test_name}-influx.json"
+  csv_file="${OUTPUT_DIR}/${test_name}.csv"
 
   echo -e "\n${GREEN}运行测试: $test_file${NC}"
 
@@ -76,7 +77,8 @@ for test_file in "${TEST_FILES[@]}"; do
   k6 run "$test_file" \
     --summary-export="$summary_file" \
     --out json="$result_file" \
-    --out influxdb="$influx_file"
+    --out influxdb="$influx_file" \
+    --out csv="$csv_file"
 
   # 检查测试结果
   if [ $? -eq 0 ]; then
@@ -84,6 +86,7 @@ for test_file in "${TEST_FILES[@]}"; do
     echo -e "${YELLOW}测试摘要已保存到: $summary_file${NC}"
     echo -e "${YELLOW}详细数据已保存到: $result_file${NC}"
     echo -e "${YELLOW}时序数据已保存到: $influx_file${NC}"
+    echo -e "${YELLOW}CSV数据已保存到: $csv_file${NC}"
   else
     echo -e "${RED}测试失败: $test_file${NC}"
     exit 1
@@ -109,7 +112,11 @@ echo -e "${YELLOW}完成时间: $(date)${NC}"
 
 # 提示用户可以使用Grafana查看测试曲线
 echo -e "\n${GREEN}提示:${NC}"
-echo -e "要查看实时测试曲线，您可以:"
+echo -e "测试结果已保存为多种格式:"
+echo -e "1. JSON格式 (详细数据): ${OUTPUT_DIR}/*.json"
+echo -e "2. CSV格式 (表格数据): ${OUTPUT_DIR}/*.csv"
+echo -e "3. HTML报告: ${OUTPUT_DIR}/report.html"
+echo -e "\n要查看实时测试曲线，您可以:"
 echo -e "1. 安装并运行 InfluxDB 和 Grafana"
 echo -e "2. 在 Grafana 中导入 k6 的官方仪表板"
 echo -e "3. 使用以下命令运行测试:"
