@@ -19,4 +19,5 @@ Thumbs.db
 .idea/
 *.sw?
 
-# Optional: environment or se
+# test
+output/
