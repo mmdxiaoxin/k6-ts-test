@@ -34,16 +34,23 @@ AppDataSource.initialize()
 
     // 读取所有用户
     const allUsers = await readUsers(AppDataSource);
-    if (allUsers.success) {
+    if (allUsers.success && allUsers.usernames) {
       console.log(`找到 ${allUsers.count} 个用户:`);
       console.log(allUsers.usernames);
+
+      // 转换数据格式并导出
+      const formattedUsers = allUsers.usernames.map((username, index) => ({
+        "数据集名称": `数据集-${index + 1}`,
+        "login": username,
+        "password": "123456"
+      }));
 
       // 导出所有用户名到JSON文件
       const outputPath = path.join(__dirname, '../output/all_users.json');
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
       await fs.writeFile(
         outputPath,
-        JSON.stringify(allUsers.usernames, null, 2),
+        JSON.stringify(formattedUsers, null, 2),
         'utf-8'
       );
       console.log(`\n所有用户名已导出到: ${outputPath}`);
@@ -53,16 +60,23 @@ AppDataSource.initialize()
     const expertUsers = await readUsers(AppDataSource, {
       roleNames: ['expert']
     });
-    if (expertUsers.success) {
+    if (expertUsers.success && expertUsers.usernames) {
       console.log(`\n找到 ${expertUsers.count} 个特定角色用户:`);
       console.log(expertUsers.usernames);
+
+      // 转换数据格式并导出
+      const formattedExpertUsers = expertUsers.usernames.map((username, index) => ({
+        "数据集名称": `数据集-${index + 1}`,
+        "login": username,
+        "password": "123456"
+      }));
 
       // 导出特定角色用户名到JSON文件
       const outputPath = path.join(__dirname, '../output/special_users.json');
       await fs.mkdir(path.dirname(outputPath), { recursive: true });
       await fs.writeFile(
         outputPath,
-        JSON.stringify(expertUsers.usernames, null, 2),
+        JSON.stringify(formattedExpertUsers, null, 2),
         'utf-8'
       );
       console.log(`特定角色用户名已导出到: ${outputPath}`);
