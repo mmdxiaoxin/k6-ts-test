@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { User } from "./models/user.entity";
 import { Role } from "./models/role.entity";
 import { Profile } from "./models/profile.entity";
+import { Menu } from "./models/menu.entity";
 import { DataGenerator } from "./utils/generate";
 import { faker } from "@faker-js/faker";
 import * as dotenv from 'dotenv';
@@ -20,7 +21,7 @@ const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE || 'test',
   synchronize: true, // 开发环境可以使用，生产环境建议关闭
   logging: true,
-  entities: [User, Role, Profile],
+  entities: [User, Role, Profile, Menu],
   migrations: [],
   subscribers: [],
 });
