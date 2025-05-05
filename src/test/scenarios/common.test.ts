@@ -34,6 +34,14 @@ export const options: Options = {
   },
 };
 
+// HTTP/2 请求配置
+const http2Params = {
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  http2: true, // 启用 HTTP/2
+};
+
 export default function () {
   // 随机选择一个测试账号
   const account = testData[Math.floor(Math.random() * testData.length)];
@@ -44,15 +52,12 @@ export default function () {
     password: account.password,
   };
 
-  const loginRes = http.post(`${BASE_URL}/auth/login`, JSON.stringify(loginPayload), {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const loginRes = http.post(`${BASE_URL}/auth/login`, JSON.stringify(loginPayload), http2Params);
 
   check(loginRes, {
     'login status is 200': (r) => r.status === 200,
     'login has token': (r) => r.json('access_token') !== undefined,
+    'login uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
   const token = loginRes.json('access_token');
@@ -64,27 +69,31 @@ export default function () {
   };
 
   // 2. 获取界面路由
-  const routesRes = http.get(`${BASE_URL}/menu/routes`, { headers });
+  const routesRes = http.get(`${BASE_URL}/menu/routes`, { ...http2Params, headers });
   check(routesRes, {
     'routes status is 200': (r) => r.status === 200,
+    'routes uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
   // 3. 获取角色字典
-  const roleDictRes = http.get(`${BASE_URL}/role/dict`, { headers });
+  const roleDictRes = http.get(`${BASE_URL}/role/dict`, { ...http2Params, headers });
   check(roleDictRes, {
     'role dict status is 200': (r) => r.status === 200,
+    'role dict uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
   // 4. 获取用户信息
-  const profileRes = http.get(`${BASE_URL}/user/profile`, { headers });
+  const profileRes = http.get(`${BASE_URL}/user/profile`, { ...http2Params, headers });
   check(profileRes, {
     'profile status is 200': (r) => r.status === 200,
+    'profile uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
   // 5. 获取头像
-  const avatarRes = http.get(`${BASE_URL}/user/avatar`, { headers });
+  const avatarRes = http.get(`${BASE_URL}/user/avatar`, { ...http2Params, headers });
   check(avatarRes, {
     'avatar status is 200': (r) => r.status === 200,
+    'avatar uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
   // 6. 等待1秒
