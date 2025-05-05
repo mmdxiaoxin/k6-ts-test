@@ -47,7 +47,7 @@ export async function generateUsers(
     console.log(`读取到角色:`, roles.map(role => role.name).join(', '));
 
     // 生成并保存用户
-    const users = DataGenerator.generateUsers(count);
+    const users = await DataGenerator.generateUsers(count);
     const savedUsers = await dataSource.manager.save(users);
     console.log("用户创建成功:", savedUsers);
 
