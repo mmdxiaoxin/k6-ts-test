@@ -9,7 +9,7 @@ NC='\033[0m' # No Color
 # InfluxDB 配置
 INFLUXDB_ORG="nwafu"
 INFLUXDB_BUCKET="k6-bucket"
-INFLUXDB_TOKEN="Wu8eHV8pEsm6vSaT9i8pobvOz7isGtRbccBbUxdTL374b7C5eYE8EFlfokzsURw4QDOePEIuuf5jdCTsoZQhxg=="
+INFLUXDB_TOKEN="kmtK4nbkKAlN1kMwsVN2IBXm73MchovyHig_kIpovqRGvSxqtdpXsy4kpmz-Y1L-LQRLOrUBAzaVclc4yg0oQA=="
 INFLUXDB_ADDR="http://localhost:8086"
 
 # 显示帮助信息
