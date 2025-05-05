@@ -1,11 +1,13 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm";
-import { User } from "./models/user.entity";
-import { Role } from "./models/role.entity";
-import { Profile } from "./models/profile.entity";
-import { Menu } from "./models/menu.entity";
 import * as dotenv from 'dotenv';
-import { generateUsers } from "./scripts/generateUsers";
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import "reflect-metadata";
+import { DataSource } from "typeorm";
+import { Menu } from "./models/menu.entity";
+import { Profile } from "./models/profile.entity";
+import { Role } from "./models/role.entity";
+import { User } from "./models/user.entity";
+import { readUsers } from "./scripts/readUsers";
 
 // 加载环境变量
 dotenv.config();
@@ -30,18 +32,45 @@ AppDataSource.initialize()
   .then(async () => {
     console.log("数据库连接成功");
 
-    // 调用生成用户脚本，生成100个普通用户
-    const result = await generateUsers(AppDataSource, {
-      count: 100,
+    // 读取所有用户
+    const allUsers = await readUsers(AppDataSource);
+    if (allUsers.success) {
+      console.log(`找到 ${allUsers.count} 个用户:`);
+      console.log(allUsers.usernames);
+
+      // 导出所有用户名到JSON文件
+      const outputPath = path.join(__dirname, '../output/all_users.json');
+      await fs.mkdir(path.dirname(outputPath), { recursive: true });
+      await fs.writeFile(
+        outputPath,
+        JSON.stringify(allUsers.usernames, null, 2),
+        'utf-8'
+      );
+      console.log(`\n所有用户名已导出到: ${outputPath}`);
+    }
+
+    // 读取具有特定角色的用户
+    const expertUsers = await readUsers(AppDataSource, {
+      roleNames: ['expert']
     });
-    
-    if (!result.success) {
-      console.error("生成用户失败:", result.error);
+    if (expertUsers.success) {
+      console.log(`\n找到 ${expertUsers.count} 个特定角色用户:`);
+      console.log(expertUsers.usernames);
+
+      // 导出特定角色用户名到JSON文件
+      const outputPath = path.join(__dirname, '../output/special_users.json');
+      await fs.mkdir(path.dirname(outputPath), { recursive: true });
+      await fs.writeFile(
+        outputPath,
+        JSON.stringify(expertUsers.usernames, null, 2),
+        'utf-8'
+      );
+      console.log(`特定角色用户名已导出到: ${outputPath}`);
     }
 
     // 关闭数据库连接
     await AppDataSource.destroy();
-    console.log("数据库连接已关闭");
+    console.log("\n数据库连接已关闭");
     
     // 终止程序
     process.exit(0);
