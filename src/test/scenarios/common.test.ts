@@ -5,6 +5,7 @@ import { Options } from 'k6/options';
 import { ReqLogin } from '../../types/auth';
 import * as fs from 'fs';
 import * as path from 'path';
+import { DiagnosisSupport } from '../../types/diagnosis';
 
 const BASE_URL = 'https://www.mmdxiaoxin.top/api';
 const IMAGES_DIR = '/home/xiaoxin/projects/k6-ts-test/src/data/images';
@@ -158,6 +159,14 @@ export default function () {
     'support status is 200': (r) => r.status === 200
   });
 
+  // 从诊断支持中随机选择一个配置
+  const supportData = supportRes.json('data') as DiagnosisSupport[];
+  if (!supportData || supportData.length === 0) {
+    console.error('没有可用的诊断支持配置');
+    return;
+  }
+  const randomSupport = supportData[Math.floor(Math.random() * supportData.length)];
+
   // 等待5秒
   sleep(5);
 
@@ -185,8 +194,8 @@ export default function () {
   const startDiagnosisRes = http.post(
     `${BASE_URL}/diagnosis/${diagnosisId}/start`,
     JSON.stringify({
-      serviceId: 5,
-      configId: 107
+      serviceId: randomSupport.value.serviceId,
+      configId: randomSupport.value.configId
     }),
     { ...http2Params, headers }
   );
