@@ -21,19 +21,14 @@ const testData = new SharedArray<TestAccount>('test data', function () {
 });
 
 export const options: Options = {
-  // 定义测试阶段
-  stages: [
-    { duration: '30s', target: 100 }, // 30秒内逐渐增加到100个并发用户
-  ],
+  // 设置虚拟用户数和迭代次数
+  vus: 10,        // 10个虚拟用户
+  iterations: 10, // 总共执行10次迭代
   // 定义性能指标阈值
   thresholds: {
     http_req_duration: ['p(95)<1000'], // 95%的请求应该在1s内完成
     http_req_failed: ['rate<0.01'],   // 错误率应该低于1%
   },
-  // 设置迭代次数为1，每个虚拟用户只执行一次
-  iterations: 1,
-  // 设置持续时间为2分钟
-  duration: '2m',
 };
 
 // HTTP/2 请求配置
@@ -42,6 +37,7 @@ const http2Params = {
     'Content-Type': 'application/json',
   },
   http2: true, // 启用 HTTP/2
+  timeout: '30s', // 设置请求超时时间
 };
 
 // 随机延时函数
@@ -62,11 +58,25 @@ export default function () {
 
   const loginRes = http.post(`${BASE_URL}/auth/login`, JSON.stringify(loginPayload), http2Params);
 
+  // 检查登录响应
   check(loginRes, {
     'login status is 200': (r) => r.status === 200,
-    'login has token': (r) => r.json('access_token') !== undefined,
+    'login has token': (r) => {
+      try {
+        return r.json('access_token') !== undefined;
+      } catch (e) {
+        console.error('登录响应解析失败:', e);
+        return false;
+      }
+    },
     'login uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
+
+  // 如果登录失败，直接返回
+  if (loginRes.status !== 200) {
+    console.error('登录失败:', loginRes.status, loginRes.body);
+    return;
+  }
 
   const token = loginRes.json('access_token');
 
