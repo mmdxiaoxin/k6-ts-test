@@ -26,7 +26,7 @@ interface TestAccount {
 
 // 测试数据
 const testData = new SharedArray<TestAccount>('test data', function () {
-  const users: string[] = JSON.parse(open('../../../output/all_users.json'));
+  const users: string[] = JSON.parse(open('../../data/all_users.json'));
   return users.map((login: string) => ({
     login,
     password: '123456'
