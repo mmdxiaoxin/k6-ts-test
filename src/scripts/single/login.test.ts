@@ -19,18 +19,18 @@ export const options = {
   summaryTrendStats: ['avg', 'min', 'med', 'max', 'p(95)', 'p(99)'],
 };
 
+interface TestAccount {
+  login: string;
+  password: string;
+}
+
 // 测试数据
-const testData = new SharedArray('test data', function () {
-  return [
-    {
-      login: 'admin',
-      password: '123456',
-    },
-    {
-      login: 'mmdxiaoxin',
-      password: '123456',
-    },
-  ];
+const testData = new SharedArray<TestAccount>('test data', function () {
+  const users: string[] = JSON.parse(open('../../../output/all_users.json'));
+  return users.map((login: string) => ({
+    login,
+    password: '123456'
+  }));
 });
 
 // 测试函数

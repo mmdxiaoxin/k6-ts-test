@@ -96,11 +96,14 @@ for test_file in "${TEST_FILES[@]}"; do
   result_file="${OUTPUT_DIR}/${test_name}.json"
   summary_file="${OUTPUT_DIR}/${test_name}-summary.json"
   csv_file="${OUTPUT_DIR}/${test_name}.csv"
+  html_file="${OUTPUT_DIR}/${test_name}-report.html"
 
   echo -e "\n${GREEN}运行测试: $test_file${NC}"
 
   # 使用本地 k6 运行测试
   K6_INFLUXDB_ORGANIZATION="$INFLUXDB_ORG" \
+    K6_WEB_DASHBOARD=true \
+    K6_WEB_DASHBOARD_EXPORT="$html_file" \
     K6_INFLUXDB_BUCKET="$INFLUXDB_BUCKET" \
     K6_INFLUXDB_TOKEN="$INFLUXDB_TOKEN" \
     K6_INFLUXDB_ADDR="$INFLUXDB_ADDR" \
@@ -117,6 +120,7 @@ for test_file in "${TEST_FILES[@]}"; do
     echo -e "${YELLOW}测试摘要已保存到: $summary_file${NC}"
     echo -e "${YELLOW}详细数据已保存到: $result_file${NC}"
     echo -e "${YELLOW}CSV数据已保存到: $csv_file${NC}"
+    echo -e "${YELLOW}HTML报告已保存到: $html_file${NC}"
   else
     echo -e "${RED}测试失败: $test_file${NC}"
     exit 1
@@ -132,4 +136,5 @@ echo -e "\n${GREEN}提示:${NC}"
 echo -e "测试结果已保存为多种格式:"
 echo -e "1. JSON格式 (详细数据): ${OUTPUT_DIR}/*.json"
 echo -e "2. CSV格式 (表格数据): ${OUTPUT_DIR}/*.csv"
-echo -e "3. InfluxDB 数据已直接写入到配置的 InfluxDB 实例中"
+echo -e "3. HTML格式 (可视化报告): ${OUTPUT_DIR}/*-report.html"
+echo -e "4. InfluxDB 数据已直接写入到配置的 InfluxDB 实例中"
