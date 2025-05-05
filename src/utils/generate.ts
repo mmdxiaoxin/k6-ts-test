@@ -16,7 +16,7 @@ export class DataGenerator {
     
     // 生成个人资料
     const profile = new Profile();
-    profile.nickname = faker.person.fullName();
+    profile.name = faker.person.fullName();
     profile.avatar = faker.image.avatar();
     profile.phone = faker.phone.number();
     profile.address = faker.location.streetAddress();
