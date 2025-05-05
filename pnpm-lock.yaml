@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@faker-js/faker':
+        specifier: ^9.7.0
+        version: 9.7.0
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.5.0
       mysql2:
         specifier: ^3.14.1
         version: 3.14.1
@@ -29,6 +35,10 @@ importers:
         version: 5.8.3
 
 packages:
+
+  '@faker-js/faker@9.7.0':
+    resolution: {integrity: sha512-aozo5vqjCmDoXLNUJarFZx2IN/GgGaogY4TMJ6so/WLZOWpSV7fvj2dmrV6sEAnUm1O7aCrhTibjpzeDFgNqbg==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -373,6 +383,8 @@ packages:
     engines: {node: '>=12'}
 
 snapshots:
+
+  '@faker-js/faker@9.7.0': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
