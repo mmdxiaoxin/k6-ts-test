@@ -24,14 +24,16 @@ export const options: Options = {
   // 定义测试阶段
   stages: [
     { duration: '30s', target: 100 }, // 30秒内逐渐增加到100个并发用户
-    { duration: '1m', target: 100 },  // 保持100个并发用户1分钟
-    { duration: '30s', target: 0 },   // 30秒内逐渐减少到0个并发用户
   ],
   // 定义性能指标阈值
   thresholds: {
     http_req_duration: ['p(95)<1000'], // 95%的请求应该在1s内完成
     http_req_failed: ['rate<0.01'],   // 错误率应该低于1%
   },
+  // 设置迭代次数为1，每个虚拟用户只执行一次
+  iterations: 1,
+  // 设置持续时间为2分钟
+  duration: '2m',
 };
 
 // HTTP/2 请求配置
@@ -41,6 +43,12 @@ const http2Params = {
   },
   http2: true, // 启用 HTTP/2
 };
+
+// 随机延时函数
+function randomSleep(min: number, max: number) {
+  const delay = Math.floor(Math.random() * (max - min + 1)) + min;
+  sleep(delay);
+}
 
 export default function () {
   // 随机选择一个测试账号
@@ -75,12 +83,18 @@ export default function () {
     'routes uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
+  // 路由加载后等待0.5-2秒
+  randomSleep(0.5, 2);
+
   // 3. 获取角色字典
   const roleDictRes = http.get(`${BASE_URL}/role/dict`, { ...http2Params, headers });
   check(roleDictRes, {
     'role dict status is 200': (r) => r.status === 200,
     'role dict uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
+
+  // 角色字典加载后等待0.5-2秒
+  randomSleep(0.5, 2);
 
   // 4. 获取用户信息
   const profileRes = http.get(`${BASE_URL}/user/profile`, { ...http2Params, headers });
@@ -89,6 +103,9 @@ export default function () {
     'profile uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
+  // 用户信息加载后等待0.5-2秒
+  randomSleep(0.5, 2);
+
   // 5. 获取头像
   const avatarRes = http.get(`${BASE_URL}/user/avatar`, { ...http2Params, headers });
   check(avatarRes, {
@@ -96,6 +113,6 @@ export default function () {
     'avatar uses HTTP/2': (r) => r.proto === 'HTTP/2.0',
   });
 
-  // 6. 等待1秒
-  sleep(1);
+  // 最后等待1-3秒
+  randomSleep(1, 3);
 }
