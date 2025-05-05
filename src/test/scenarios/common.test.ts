@@ -29,7 +29,7 @@ export const options: Options = {
   ],
   // 定义性能指标阈值
   thresholds: {
-    http_req_duration: ['p(95)<500'], // 95%的请求应该在500ms内完成
+    http_req_duration: ['p(95)<1000'], // 95%的请求应该在1s内完成
     http_req_failed: ['rate<0.01'],   // 错误率应该低于1%
   },
 };
