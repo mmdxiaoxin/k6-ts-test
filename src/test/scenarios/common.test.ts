@@ -156,8 +156,7 @@ export default function () {
   const uploadRes = http.post(`${BASE_URL}/diagnosis/upload`, formData, {
     ...http2Params,
     headers: {
-      ...headers,
-      'Content-Type': 'multipart/form-data'
+      'Authorization': `Bearer ${token}`
     }
   });
   check(uploadRes, {
