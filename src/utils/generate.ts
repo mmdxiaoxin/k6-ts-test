@@ -10,7 +10,7 @@ export class DataGenerator {
   static generateUser(): User {
     const user = new User();
     user.email = faker.internet.email();
-    user.username = faker.internet.userName();
+    user.username = faker.internet.username();
     user.password = faker.internet.password();
     user.status = Math.random() > 0.5 ? 1 : 0;
     
