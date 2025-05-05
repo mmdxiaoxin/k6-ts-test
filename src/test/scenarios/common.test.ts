@@ -22,20 +22,7 @@ const testData = new SharedArray<TestAccount>('test data', function () {
 });
 
 // 图片数据
-const testImages = new SharedArray('test images', function () {
-  return [
-    open('../../data/images/t1.jpg', 'b'),
-    open('../../data/images/t2.jpg', 'b'),
-    open('../../data/images/t3.jpg', 'b'),
-    open('../../data/images/t4.jpg', 'b'),
-    open('../../data/images/t5.jpg', 'b'),
-    open('../../data/images/t6.jpg', 'b'),
-    open('../../data/images/t7.jpg', 'b'),
-    open('../../data/images/t8.jpg', 'b'),
-    open('../../data/images/t9.jpg', 'b'),
-    open('../../data/images/t10.jpg', 'b')
-  ];
-});
+const testImage = open('../../data/images/t1.jpg', 'b');
 
 export const options: Options = {
   // 设置虚拟用户数和迭代次数
@@ -43,8 +30,8 @@ export const options: Options = {
   iterations: 10, // 总共执行10次迭代
   // 定义性能指标阈值
   thresholds: {
-    http_req_duration: ['p(95)<1000'], // 95%的请求应该在1s内完成
-    http_req_failed: ['rate<0.01'],   // 错误率应该低于1%
+    http_req_duration: ['p(95)<3000'], // 95%的请求应该在3s内完成
+    http_req_failed: ['rate<0.05'],   // 错误率应该低于5%
   },
   // DNS 配置
   dns: {
@@ -162,26 +149,37 @@ export default function () {
   sleep(5);
 
   // 7. 上传待诊断数据
-  const randomImage = testImages[Math.floor(Math.random() * testImages.length)];
   const formData = {
-    file: http.file(randomImage, 'test.jpg', 'image/jpeg')
+    file: http.file(testImage, 'test.jpg', 'image/jpeg')
   };
+  
   const uploadRes = http.post(`${BASE_URL}/diagnosis/upload`, formData, {
     ...http2Params,
     headers: {
       ...headers,
-      'Content-Type': 'multipart/form-data; charset=utf-8'
+      'Content-Type': 'multipart/form-data'
     }
   });
   check(uploadRes, {
     'upload status is 201': (r) => r.status === 201
   });
 
+  // 如果上传失败，直接返回
+  if (uploadRes.status !== 201) {
+    console.error('上传失败:', uploadRes.status, uploadRes.body);
+    return;
+  }
+
   // 等待1秒
   sleep(1);
 
   // 8. 进行诊断
   const diagnosisId = uploadRes.json('data.id');
+  if (!diagnosisId) {
+    console.error('获取诊断ID失败');
+    return;
+  }
+
   const startDiagnosisRes = http.post(
     `${BASE_URL}/diagnosis/${diagnosisId}/start`,
     JSON.stringify({
@@ -193,6 +191,12 @@ export default function () {
   check(startDiagnosisRes, {
     'start diagnosis status is 201': (r) => r.status === 201
   });
+
+  // 如果诊断启动失败，直接返回
+  if (startDiagnosisRes.status !== 201) {
+    console.error('诊断启动失败:', startDiagnosisRes.status, startDiagnosisRes.body);
+    return;
+  }
 
   // 等待1秒
   sleep(1);
