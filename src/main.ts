@@ -30,19 +30,22 @@ AppDataSource.initialize()
   .then(async () => {
     console.log("数据库连接成功");
 
-    // 生成并保存角色
-    const roles = DataGenerator.generateRoles(3);
-    const savedRoles = await AppDataSource.manager.save(roles);
-    console.log("角色创建成功:", savedRoles);
+    // 从数据库读取已有角色
+    const existingRoles = await AppDataSource.manager.find(Role);
+    if (existingRoles.length === 0) {
+      console.log("数据库中没有角色，请先创建角色");
+      return;
+    }
+    console.log("读取到已有角色:", existingRoles);
 
     // 生成并保存用户
     const users = DataGenerator.generateUsers(5);
     const savedUsers = await AppDataSource.manager.save(users);
     console.log("用户创建成功:", savedUsers);
 
-    // 为每个用户随机分配角色
+    // 为每个用户随机分配已有角色
     for (const user of savedUsers) {
-      user.roles = faker.helpers.arrayElements(savedRoles, { min: 1, max: 3 });
+      user.roles = faker.helpers.arrayElements(existingRoles, { min: 1, max: 3 });
       await AppDataSource.manager.save(user);
     }
     console.log("用户角色分配完成");
