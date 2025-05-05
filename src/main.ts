@@ -4,9 +4,8 @@ import { User } from "./models/user.entity";
 import { Role } from "./models/role.entity";
 import { Profile } from "./models/profile.entity";
 import { Menu } from "./models/menu.entity";
-import { DataGenerator } from "./utils/generate";
-import { faker } from "@faker-js/faker";
 import * as dotenv from 'dotenv';
+import { generateUsers } from "./scripts/generateUsers";
 
 // 加载环境变量
 dotenv.config();
@@ -31,25 +30,27 @@ AppDataSource.initialize()
   .then(async () => {
     console.log("数据库连接成功");
 
-    // 从数据库读取已有角色
-    const existingRoles = await AppDataSource.manager.find(Role);
-    if (existingRoles.length === 0) {
-      console.log("数据库中没有角色，请先创建角色");
-      return;
+    // 调用生成用户脚本，生成100个普通用户
+    const result = await generateUsers(AppDataSource, {
+      count: 100,
+    });
+    
+    if (!result.success) {
+      console.error("生成用户失败:", result.error);
     }
-    console.log("读取到已有角色:", existingRoles);
 
-    // 生成并保存用户
-    const users = DataGenerator.generateUsers(5);
-    const savedUsers = await AppDataSource.manager.save(users);
-    console.log("用户创建成功:", savedUsers);
-
-    // 为每个用户随机分配已有角色
-    for (const user of savedUsers) {
-      user.roles = faker.helpers.arrayElements(existingRoles, { min: 1, max: 3 });
-      await AppDataSource.manager.save(user);
-    }
-    console.log("用户角色分配完成");
-
+    // 关闭数据库连接
+    await AppDataSource.destroy();
+    console.log("数据库连接已关闭");
+    
+    // 终止程序
+    process.exit(0);
   })
-  .catch((error) => console.log("数据库连接失败:", error));
+  .catch(async (error) => {
+    console.log("数据库连接失败:", error);
+    // 确保在错误情况下也关闭数据库连接
+    if (AppDataSource.isInitialized) {
+      await AppDataSource.destroy();
+    }
+    process.exit(1);
+  });
