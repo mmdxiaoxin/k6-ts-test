@@ -1,20 +1,47 @@
 import { check, sleep } from 'k6';
+import { SharedArray } from 'k6/data';
 import http from 'k6/http';
 import { Options } from 'k6/options';
 import { ReqLogin } from '../../types/auth';
 
 const BASE_URL = 'https://www.mmdxiaoxin.top/api';
 
+interface TestAccount {
+  login: string;
+  password: string;
+}
+
+// 测试数据
+const testData = new SharedArray<TestAccount>('test data', function () {
+  const users: string[] = JSON.parse(open('../../data/all_users.json'));
+  return users.map((login: string) => ({
+    login,
+    password: '123456'
+  }));
+});
+
 export const options: Options = {
-  vus: 1,
-  duration: '30s',
+  // 定义测试阶段
+  stages: [
+    { duration: '30s', target: 100 }, // 30秒内逐渐增加到100个并发用户
+    { duration: '1m', target: 100 },  // 保持100个并发用户1分钟
+    { duration: '30s', target: 0 },   // 30秒内逐渐减少到0个并发用户
+  ],
+  // 定义性能指标阈值
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // 95%的请求应该在500ms内完成
+    http_req_failed: ['rate<0.01'],   // 错误率应该低于1%
+  },
 };
 
 export default function () {
+  // 随机选择一个测试账号
+  const account = testData[Math.floor(Math.random() * testData.length)];
+
   // 1. 登录获取token
   const loginPayload: ReqLogin = {
-    login: 'admin',
-    password: '123456',
+    login: account.login,
+    password: account.password,
   };
 
   const loginRes = http.post(`${BASE_URL}/auth/login`, JSON.stringify(loginPayload), {
