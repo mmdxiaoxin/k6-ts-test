@@ -6,14 +6,14 @@ import { Menu } from './menu.entity';
 @Entity('role')
 export class Role extends BaseEntity {
   @Column({ type: 'varchar', length: 255, unique: true })
-  name: string;
+  name!: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  alias: string | null;
+  alias!: string | null;
 
   @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+  users!: User[];
 
   @ManyToMany(() => Menu, (menu) => menu.roles)
-  menus: Menu[];
+  menus!: Menu[];
 }

@@ -13,19 +13,19 @@ import { Role } from './role.entity';
 @Entity('menu')
 export class Menu {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ type: 'varchar', length: 255 })
-  icon: string;
+  icon!: string;
 
   @Column({ type: 'varchar', length: 255 })
-  title: string;
+  title!: string;
 
   @Column({ type: 'varchar', length: 255 })
-  path: string;
+  path!: string;
 
   @Column({ type: 'int', default: 0 })
-  sort: number;
+  sort!: number;
 
   @Column({ nullable: true })
   parentId?: number;
@@ -36,11 +36,11 @@ export class Menu {
   // 定义父级菜单（OneToMany）
   @ManyToOne(() => Menu, (menu) => menu.children)
   @JoinColumn({ name: 'parentId' })
-  parent: Menu;
+  parent!: Menu;
 
   // 定义子级菜单（OneToMany）
   @OneToMany(() => Menu, (menu) => menu.parent)
-  children: Menu[];
+  children!: Menu[];
 
   @ManyToMany(() => Role, (role) => role.menus)
   @JoinTable({
@@ -48,5 +48,5 @@ export class Menu {
     joinColumn: { name: 'menu_id' },
     inverseJoinColumn: { name: 'role_id' },
   })
-  roles: Role[];
+  roles!: Role[];
 }
