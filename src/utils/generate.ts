@@ -37,8 +37,7 @@ export class DataGenerator {
    */
   static generateRole(): Role {
     const role = new Role();
-    role.name = faker.helpers.arrayElement(['admin', 'user', 'editor', 'guest']);
-    role.description = faker.lorem.sentence();
+    role.name = faker.helpers.arrayElement(['admin', 'user', 'expert']);
     return role;
   }
 
