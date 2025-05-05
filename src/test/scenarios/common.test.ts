@@ -3,37 +3,13 @@ import { SharedArray } from 'k6/data';
 import http from 'k6/http';
 import { Options } from 'k6/options';
 import { ReqLogin } from '../../types/auth';
-import * as fs from 'fs';
-import * as path from 'path';
 import { DiagnosisSupport } from '../../types/diagnosis';
 
 const BASE_URL = 'https://www.mmdxiaoxin.top/api';
-const IMAGES_DIR = '/home/xiaoxin/projects/k6-ts-test/src/data/images';
 
 interface TestAccount {
   login: string;
   password: string;
-}
-
-// 获取图片列表
-function getImageFiles(): string[] {
-  try {
-    return fs.readdirSync(IMAGES_DIR)
-      .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
-      .map(file => path.join(IMAGES_DIR, file));
-  } catch (error) {
-    console.error('读取图片目录失败:', error);
-    return [];
-  }
-}
-
-// 随机选择一张图片
-function getRandomImage(): string {
-  const images = getImageFiles();
-  if (images.length === 0) {
-    throw new Error('没有找到可用的图片文件');
-  }
-  return images[Math.floor(Math.random() * images.length)];
 }
 
 // 测试数据
@@ -43,6 +19,22 @@ const testData = new SharedArray<TestAccount>('test data', function () {
     login,
     password: '123456'
   }));
+});
+
+// 图片数据
+const testImages = new SharedArray('test images', function () {
+  return [
+    open('../../data/images/t1.jpg', 'b'),
+    open('../../data/images/t2.jpg', 'b'),
+    open('../../data/images/t3.jpg', 'b'),
+    open('../../data/images/t4.jpg', 'b'),
+    open('../../data/images/t5.jpg', 'b'),
+    open('../../data/images/t6.jpg', 'b'),
+    open('../../data/images/t7.jpg', 'b'),
+    open('../../data/images/t8.jpg', 'b'),
+    open('../../data/images/t9.jpg', 'b'),
+    open('../../data/images/t10.jpg', 'b')
+  ];
 });
 
 export const options: Options = {
@@ -65,8 +57,7 @@ export const options: Options = {
 // HTTP/2 请求配置
 const http2Params = {
   headers: {
-    'Content-Type': 'application/json',
-    'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
+    'Content-Type': 'application/json'
   },
   http2: true, // 启用 HTTP/2
   timeout: '30s', // 设置请求超时时间
@@ -114,7 +105,7 @@ export default function () {
   // 设置通用请求头
   const headers = {
     'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json',
+    'Content-Type': 'application/json'
   };
 
   // 2. 获取界面路由
@@ -171,9 +162,9 @@ export default function () {
   sleep(5);
 
   // 7. 上传待诊断数据
-  const randomImagePath = getRandomImage();
+  const randomImage = testImages[Math.floor(Math.random() * testImages.length)];
   const formData = {
-    file: http.file(randomImagePath, 'image/jpeg')
+    file: http.file(randomImage, 'test.jpg', 'image/jpeg')
   };
   const uploadRes = http.post(`${BASE_URL}/diagnosis/upload`, formData, {
     ...http2Params,
