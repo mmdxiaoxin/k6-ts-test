@@ -3,12 +3,36 @@ import { SharedArray } from 'k6/data';
 import http from 'k6/http';
 import { Options } from 'k6/options';
 import { ReqLogin } from '../../types/auth';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const BASE_URL = 'https://www.mmdxiaoxin.top/api';
+const IMAGES_DIR = '/home/xiaoxin/projects/k6-ts-test/src/data/images';
 
 interface TestAccount {
   login: string;
   password: string;
+}
+
+// 获取图片列表
+function getImageFiles(): string[] {
+  try {
+    return fs.readdirSync(IMAGES_DIR)
+      .filter(file => /\.(jpg|jpeg|png)$/i.test(file))
+      .map(file => path.join(IMAGES_DIR, file));
+  } catch (error) {
+    console.error('读取图片目录失败:', error);
+    return [];
+  }
+}
+
+// 随机选择一张图片
+function getRandomImage(): string {
+  const images = getImageFiles();
+  if (images.length === 0) {
+    throw new Error('没有找到可用的图片文件');
+  }
+  return images[Math.floor(Math.random() * images.length)];
 }
 
 // 测试数据
@@ -90,7 +114,6 @@ export default function () {
   const headers = {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json',
-    'User-Agent': 'Apifox/1.0.0 (https://apifox.com)'
   };
 
   // 2. 获取界面路由
@@ -139,8 +162,9 @@ export default function () {
   sleep(5);
 
   // 7. 上传待诊断数据
+  const randomImagePath = getRandomImage();
   const formData = {
-    file: http.file('test.jpg', 'image/jpeg')
+    file: http.file(randomImagePath, 'image/jpeg')
   };
   const uploadRes = http.post(`${BASE_URL}/diagnosis/upload`, formData, {
     ...http2Params,
