@@ -13,18 +13,18 @@ export enum FeedbackStatus {
 @Index('diagnosis_feedback_diagnosis_id_idx', ['diagnosisId'])
 @Index('diagnosis_feedback_created_by_idx', ['createdBy'])
 export class DiagnosisFeedback extends BaseEntity {
-  @Column({ type: 'int', comment: '诊断历史ID' })
-  diagnosisId: number;
+  @Column({ type: 'int', nullable: true, comment: '诊断历史ID' })
+  diagnosisId!: number | null;
 
-  @ManyToOne(() => DiagnosisHistory)
+  @ManyToOne(() => DiagnosisHistory, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'diagnosisId' })
-  diagnosis: DiagnosisHistory;
+  diagnosis!: DiagnosisHistory | null;
 
   @Column({ type: 'text', comment: '用户反馈内容' })
-  feedbackContent: string;
+  feedbackContent!: string;
 
   @Column({ type: 'json', nullable: true, comment: '用户提供的补充信息' })
-  additionalInfo: object | null;
+  additionalInfo!: object | null;
 
   @Column({
     type: 'enum',
@@ -32,20 +32,20 @@ export class DiagnosisFeedback extends BaseEntity {
     default: FeedbackStatus.PENDING,
     comment: '反馈状态',
   })
-  status: FeedbackStatus;
+  status!: FeedbackStatus;
 
   @Column({ type: 'int', nullable: true, comment: '处理专家ID' })
-  expertId: number | null;
+  expertId!: number | null;
 
   @Column({ type: 'text', nullable: true, comment: '专家处理意见' })
-  expertComment: string | null;
+  expertComment!: string | null;
 
   @Column({ type: 'json', nullable: true, comment: '专家修正的诊断结果' })
-  correctedResult: object | null;
+  correctedResult!: object | null;
 
   @Column({ type: 'int', comment: '创建者' })
-  createdBy: number;
+  createdBy!: number;
 
   @Column({ type: 'int', comment: '更新者' })
-  updatedBy: number;
+  updatedBy!: number;
 }

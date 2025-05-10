@@ -15,24 +15,24 @@ export class Treatment extends BaseEntity {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'diseaseId' })
-  disease: Disease;
+  disease!: Disease;
 
   @Column({ type: 'int' })
-  diseaseId: number;
+  diseaseId!: number;
 
   @Column({
     type: 'enum',
     enum: TreatmentType,
     comment: '防治措施类型',
   })
-  type: TreatmentType;
+  type!: TreatmentType;
 
   @Column({ type: 'text', comment: '防治措施' })
-  method: string;
+  method!: string;
 
   @Column({ type: 'text', nullable: true, comment: '推荐产品' })
-  recommendedProducts: string;
+  recommendedProducts!: string;
 
   @Column({ type: 'text', nullable: true, comment: '注意事项' })
-  precautions: string;
+  precautions!: string;
 }

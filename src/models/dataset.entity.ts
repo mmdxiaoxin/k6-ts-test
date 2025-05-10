@@ -7,19 +7,19 @@ import { FileEntity } from './file.entity';
 @Index('dataset_user_id_fk_2', ['updatedBy'])
 export class Dataset extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
-  name: string;
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
   description?: string;
 
   @Column({ type: 'varchar', length: 25, default: 'private' })
-  access: string;
+  access!: string;
 
   @Column({ type: 'int' })
-  createdBy: number;
+  createdBy!: number;
 
   @Column({ type: 'int' })
-  updatedBy: number;
+  updatedBy!: number;
 
   @ManyToMany(() => FileEntity, (file) => file.datasets, { nullable: true })
   @JoinTable({
@@ -27,5 +27,5 @@ export class Dataset extends BaseEntity {
     joinColumn: { name: 'datasetId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'fileId', referencedColumnName: 'id' },
   })
-  files: FileEntity[] | null;
+  files!: FileEntity[] | null;
 }

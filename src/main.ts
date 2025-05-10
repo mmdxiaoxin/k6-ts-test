@@ -8,6 +8,7 @@ import { Profile } from "./models/profile.entity";
 import { Role } from "./models/role.entity";
 import { User } from "./models/user.entity";
 import { readUsers } from "./scripts/readUsers";
+import { generateUsers } from './scripts/generateUsers';
 
 // 加载环境变量
 dotenv.config();
@@ -32,55 +33,23 @@ AppDataSource.initialize()
   .then(async () => {
     console.log("数据库连接成功");
 
-    // 读取所有用户
-    const allUsers = await readUsers(AppDataSource);
-    if (allUsers.success && allUsers.usernames) {
-      console.log(`找到 ${allUsers.count} 个用户:`);
-      console.log(allUsers.usernames);
+    // 生成用户
+    await generateUsers(AppDataSource, {
+      count: 100,
+      roleNames: ['user']
+    });
 
-      // 转换数据格式并导出
-      const formattedUsers = allUsers.usernames.map((username, index) => ({
-        "数据集名称": `数据集-${index + 1}`,
-        "login": username,
-        "password": "123456"
-      }));
+     // 生成用户
+     await generateUsers(AppDataSource, {
+      count: 10,
+      roleNames: ['admin']
+    });
 
-      // 导出所有用户名到JSON文件
-      const outputPath = path.join(__dirname, '../output/all_users.json');
-      await fs.mkdir(path.dirname(outputPath), { recursive: true });
-      await fs.writeFile(
-        outputPath,
-        JSON.stringify(formattedUsers, null, 2),
-        'utf-8'
-      );
-      console.log(`\n所有用户名已导出到: ${outputPath}`);
-    }
-
-    // 读取具有特定角色的用户
-    const expertUsers = await readUsers(AppDataSource, {
+     // 生成用户
+     await generateUsers(AppDataSource, {
+      count: 100,
       roleNames: ['expert']
     });
-    if (expertUsers.success && expertUsers.usernames) {
-      console.log(`\n找到 ${expertUsers.count} 个特定角色用户:`);
-      console.log(expertUsers.usernames);
-
-      // 转换数据格式并导出
-      const formattedExpertUsers = expertUsers.usernames.map((username, index) => ({
-        "数据集名称": `数据集-${index + 1}`,
-        "login": username,
-        "password": "123456"
-      }));
-
-      // 导出特定角色用户名到JSON文件
-      const outputPath = path.join(__dirname, '../output/special_users.json');
-      await fs.mkdir(path.dirname(outputPath), { recursive: true });
-      await fs.writeFile(
-        outputPath,
-        JSON.stringify(formattedExpertUsers, null, 2),
-        'utf-8'
-      );
-      console.log(`特定角色用户名已导出到: ${outputPath}`);
-    }
 
     // 关闭数据库连接
     await AppDataSource.destroy();

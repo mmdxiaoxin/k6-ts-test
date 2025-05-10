@@ -8,14 +8,14 @@ export class EnvironmentFactor extends BaseEntity {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'diseaseId' })
-  disease: Disease;
+  disease!: Disease;
 
   @Column({ type: 'int' })
-  diseaseId: number;
+  diseaseId!: number;
 
-  @Column({ comment: '环境因素' })
-  factor: string;
+  @Column({ type: 'varchar', length: 50, comment: '环境因素' })
+  factor!: string;
 
-  @Column({ comment: '最佳范围' })
-  optimalRange: string;
+  @Column({ type: 'varchar', length: 100, comment: '最佳范围' })
+  optimalRange!: string;
 }
