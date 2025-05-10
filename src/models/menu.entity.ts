@@ -31,7 +31,7 @@ export class Menu {
   parentId?: number;
 
   @Column({ type: 'varchar', nullable: true })
-  isLink?: string;
+  isLink?: string | null;
 
   // 定义父级菜单（OneToMany）
   @ManyToOne(() => Menu, (menu) => menu.children)

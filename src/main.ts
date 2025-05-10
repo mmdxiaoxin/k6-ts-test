@@ -9,6 +9,7 @@ import { Role } from "./models/role.entity";
 import { User } from "./models/user.entity";
 import { readUsers } from "./scripts/readUsers";
 import { generateUsers } from './scripts/generateUsers';
+import { importMenus } from './scripts/importMenus';
 
 // 加载环境变量
 dotenv.config();
@@ -32,25 +33,14 @@ const AppDataSource = new DataSource({
 AppDataSource.initialize()
   .then(async () => {
     console.log("数据库连接成功");
+    // ___________________________________________
+    // 脚本开始
 
-    // 生成用户
-    await generateUsers(AppDataSource, {
-      count: 100,
-      roleNames: ['user']
-    });
+    // 导入菜单数据
+    await importMenus(AppDataSource);
 
-     // 生成用户
-     await generateUsers(AppDataSource, {
-      count: 10,
-      roleNames: ['admin']
-    });
-
-     // 生成用户
-     await generateUsers(AppDataSource, {
-      count: 100,
-      roleNames: ['expert']
-    });
-
+    // 脚本结束
+    // ___________________________________________
     // 关闭数据库连接
     await AppDataSource.destroy();
     console.log("\n数据库连接已关闭");
