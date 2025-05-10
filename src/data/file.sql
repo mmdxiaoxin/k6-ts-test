@@ -1,0 +1,2 @@
+insert into agricultural_diagnosis.file (id, originalFileName, storageFileName, filePath, fileSize, fileType, fileMd5, access, createdAt, updatedAt, createdBy, updatedBy, version)
+values  (20863, '1619343138158_jpg.rf.716df3019a06aada8d8f377c5bda7b75.jpg', '174671340493250b1f7cb-f84b-4ce1-9775-3dee5caa3069', '/home/xiaoxin/projects/agricultural-diagnostic-service/dist/uploads/174671340493250b1f7cb-f84b-4ce1-9775-3dee5caa3069', 63823, 'image/jpeg', '14ee354472ee655975da5a788860ef79', 'private', '2025-05-08 22:10:04.945520', '2025-05-08 22:10:04.945520', 16, 16, 1);

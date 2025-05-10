@@ -1,0 +1,2 @@
+insert into agricultural_diagnosis.remote_service (id, createdAt, updatedAt, description, status, serviceName, serviceType)
+values  (5, '2025-03-28 22:50:34.196000', '2025-03-30 18:37:19.000000', 'yolo服务', 'active', '', null);
