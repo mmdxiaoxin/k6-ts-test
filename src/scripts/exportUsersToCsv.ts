@@ -16,8 +16,8 @@ export async function exportUsersToCsv(dataSource: DataSource) {
     
     // 处理每个用户
     for (const user of users) {
-      // 将用户数据添加到CSV，直接使用加密后的密码
-      csvContent += `${user.username},${user.password}\n`;
+      // 将用户数据添加到CSV，密码统一设置为123456
+      csvContent += `${user.username},123456\n`;
     }
 
     // 确保输出目录存在
