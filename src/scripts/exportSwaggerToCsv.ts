@@ -99,8 +99,8 @@ export async function exportSwaggerToCsv(swaggerUrl: string) {
           // 获取模块名称（tags）
           const moduleName = operation.tags?.[0] || '未分类';
           
-          // 添加到CSV，包含序号和模块名称
-          csvContent += `"${apiIndex}","${moduleName}","${path}","${method.toUpperCase()}","${operation.summary || ''}"\n`;
+          // 添加到CSV，序号不加引号，其他字段保持引号
+          csvContent += `${apiIndex},"${moduleName}","${path}","${method.toUpperCase()}","${operation.summary || ''}"\n`;
           apiIndex++; // 增加序号
         } catch (error: any) {
           console.error(`  处理失败: ${error.message}`);
